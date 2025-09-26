@@ -1,16 +1,17 @@
+  if( process.env.NODE_ENV !== "production"){
+    require('dotenv').config()
+  }
+
+const mongodb = require("mongodb");
 const express = require("express");
 const app = express();
-const ejs = require("ejs");
 const mongoose = require("mongoose");
-const Listing = require("./models/listing.js");
 const path = require("path");
 const methodOverride = require("method-override");
 const ejsMate = require("ejs-mate");
-const wrapAsync = require("./utils/wrapAsync.js");
 const ExpressError = require("./utils/ExpressError.js");
-const {listingSchema, reviewSchema} = require("./schema.js");
-const Review = require("./models/review.js");
 const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const flash = require("connect-flash");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -21,16 +22,36 @@ const reviewsRouter =require("./routes/review.js")
 const userRouter =require("./routes/user.js")
 
 
-const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
+// const MONGO_URL = "mongodb+srv://KamleshNishad03:rCYIDm6P6Vj2Detl@cluster0.ti3vpsm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
-main().then(() => {
-    console.log("connected to db");
-}).catch((err) => {
-    console.log(err);
-});
+const dburl =process.env.ATLASDB_URL
+
+// main().then(() => {
+//     console.log("connected to db");
+// }).catch((err) => {
+//     console.log(err);
+// });
+// async function main() {
+//     await mongoose.connect(dburl);
+// }
+// const dbUrl = "mongodb://127.0.0.1:27017/wanderlust";
+
 async function main() {
-    await mongoose.connect(MONGO_URL);
+  try {
+    await mongoose.connect(dburl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log("✅ Connected to MongoDB");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err.message);
+  }
 }
+main();
+
+
+
+
 app.set("view engine" , "ejs");
 app.set("views", path.join(__dirname , "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -40,8 +61,21 @@ app.use(express.static(path.join(__dirname,"/public")));
 // removed duplicate express.static
 app.use(express.json());
 
+
+const store = MongoStore.create({
+  mongoUrl:dburl,
+  crypto:{
+    secret: process.env.SECRET
+  },
+   touchAfter: 24*60*60
+});
+
+store.on("error",()=>{
+  console.log("error in mongo session store", err);
+})
 const sessionOptions = {
-  secret:"mysupersecret",
+  store:store,
+  secret: process.env.SECRET,
   resave:false,
   saveUninitialized:true,
   cookie:{
@@ -52,9 +86,11 @@ const sessionOptions = {
   
 };
 //home route
-app.get("/",(req , res)=>{
-    res.send("this is home route")
-});
+// app.get("/",(req , res)=>{
+//     res.send("this is home route")
+// });
+
+
 
 // session and flash configuration
 app.use(session(sessionOptions));
@@ -69,6 +105,7 @@ passport.deserializeUser(User.deserializeUser());
 app.use((req , res , next)=>{
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+  res.locals.currentUser = req.user;
   next();
 
 })
@@ -109,6 +146,24 @@ app.use("/",userRouter);
 //     next();
 //   }
 // }
+
+
+// testing routes
+
+app.get("/api/location", async (req, res) => {
+  const { place } = req.query; // e.g. /api/location?place=Gorakhpur
+  if (!place) {
+    return res.status(400).json({ error: "Place is required" });
+  }
+
+  try {
+    const data = await fetchLocation(place);
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch location" });
+  }
+});
+
 
 app.use((req , res, next)=>{
   next(new ExpressError(404, "Page Not Found"));

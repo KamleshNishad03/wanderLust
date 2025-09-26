@@ -1,19 +1,4 @@
  <% layout("/layouts/boilerplate") -%>
-  
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  
-  
 <!-- 
   ✅ Main Content -->
 
@@ -23,7 +8,7 @@
       <div class="col-md-6 col-lg-5">
         <div class="newcard p-4">
           <h2 class="text-center mb-4">Create New Listing</h2>
-          <form action="/listings" method="POST" novalidate class="needs-validation">
+          <form action="/listings" method="POST" novalidate class="needs-validation" enctype="multipart/form-data">
             <div class="mb-3">
               <label for="title" class="form-label">Title</label>
               <input type="text" id="title" name="listing[title]" class="form-control" placeholder="Enter title" required>
@@ -38,13 +23,33 @@
 
             </div>
             <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select id="category" name="listing[category]" class="form-select" required>
+                 <option value="" disabled selected>Select category</option>
+                  <option value="Trending">Trending</option>
+                  <option value="Rooms">Rooms</option>
+                  <option value="Iconic Cities">Iconic Cities</option>
+                  <option value="Mountains">Mountains</option>
+                  <option value="Castles">Castles</option>
+                  <option value="Amazing Pools">Amazing Pools</option>
+                  <option value="Camping">Camping</option>
+                  <option value="Farms">Farms</option>
+                  <option value="Arctic">Arctic</option>
+                  <option value="Domes">Domes</option>
+                  <option value="Boating">Boating</option>
+                </select>
+               <div class="invalid-feedback">Please select a valid category</div>
+            </div>
+
+            <div class="mb-3">
               <label for="price" class="form-label">price</label>
               <input  id="price" name="listing[price]" class="form-control" placeholder="Enter a faverable price" required>
               <div class="invalid-feedback">Price Should be Valid</div>
             </div>
+          
             <div class="mb-3">
-              <label for="image" class="form-label">Image URL</label>
-              <input type="string" id="image" name="listing[image][url]"  class="form-control" placeholder="Enter image URL" >
+              <label for="image" class="form-label">Upload New Image</label>
+              <input type="file" id="image" name="listing[image][url]"  class="form-control"  >
             </div>
          
 

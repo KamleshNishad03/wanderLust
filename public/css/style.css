@@ -107,9 +107,28 @@ body{
 }
  /* show page */
  .show-image{
-    height: 30vh;
+    height: 40vh;
  }
  .btns{
     display: flex;
    
  }
+
+ /* map style */
+
+#map{
+    height: 400px;
+   width: 800px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+     max-width: 100%; 
+   
+ }
+
+
+
+
+
+ 
+ 
+ 

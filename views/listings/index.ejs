@@ -3,13 +3,121 @@
 
 
 
-<h3>All listings</h3>
+<!-- <h3>All listings</h3> -->
 <!-- <form action="/listings/new"  method="get">
     <button>Create new listing </button>
 </form> -->
+<style>
+#filters{
+  display: flex;
+   flex-wrap:wrap;
+   gap: 2px;
+   align-items: center;
+
+}
+.filter{
+ text-align: center;
+  margin-right: 2rem;
+  margin-top: 2rem;
+  opacity: 0.7;
+}
+.filter:hover{
+  opacity: 1;
+  cursor: pointer;
+}
+.filter p{
+  font-size:0.8rem;
+}
+.tax-Info{
+  display: none;
+}
+.tax-toggle{
+  border: 1px solid black;
+  border-radius: 1rem;
+  height:3rem;
+  padding:1rem;
+  margin:2rem;
+  
+  display: flex;
+  align-items: center;
+
+}
+
+
  
-<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 ">
-    <% for(let listing of alllistings){ %>
+</style>
+
+<button class="btn btn-primary d-md-none mb-3 ms-auto type="button" data-bs-toggle="collapse" data-bs-target="#mobileFilters" aria-expanded="false" aria-controls="mobileFilters">
+  Show Filters
+</button>
+
+<div class="collapse d-md-block" id="mobileFilters">
+  <div id="filters" class="d-flex flex-wrap gap-2">
+    <div class="filter" data-category="Trending">
+      <div><i class="fa-solid fa-fire"></i></div>
+      <p>Trending</p>
+    </div>
+    <div class="filter" data-category="Rooms">
+      <div><i class="fa-solid fa-bed"></i></div>
+      <p>Rooms</p>
+    </div>
+    <div class="filter" data-category="Iconic Cities">
+      <div><i class="fa-solid fa-mountain-city"></i></div>
+      <p>Iconic Cities</p>
+    </div>
+    <div class="filter" data-category="Mountains">
+      <div><i class="fa-solid fa-mountain"></i></div>
+      <p>Mountains</p>
+    </div>
+    <div class="filter" data-category="Castels">
+      <div><i class="fa-solid fa-mountain"></i></div>
+      <p>Castels</p>
+    </div>
+    <div class="filter" data-category="Amazing Pools">
+      <div><i class="fa-solid fa-person-swimming"></i></div>
+      <p>Amazing Pools</p>
+    </div>
+    <div class="filter" data-category="Camping">
+      <div><i class="fa-solid fa-tents"></i></div>
+      <p>Camping</p>
+    </div>
+    <div class="filter" data-category="Farms">
+      <div><i class="fa-solid fa-cow"></i></div>
+      <p>Farms</p>
+    </div>
+    <div class="filter" data-category="Arctic">
+      <div><i class="fa-solid fa-snowplow"></i></div>
+      <p>Arctic</p>
+    </div>
+    <div class="filter" data-category="Domes">
+      <div><i class="fa-solid fa-igloo"></i></div>
+      <p>Domes</p>
+    </div>
+   
+
+    <div class="tax-toggle filter">
+    <div class="form-check-reverse form-switch">
+     <input class="form-check-input" type="checkbox" role="switch" id="switchCheckDefault">
+     <label class="form-check-label" for="switchCheckDefault">Display total after Taxes</label>
+     </div>
+
+
+  
+  
+
+  
+</div>
+
+  </div>  
+
+</div>
+
+ 
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3 ">
+   <% if (listings.length === 0 && search) { %>
+    <p>No listings found for "<%= search %>"</p>
+  <% } else { %>
+    <% for(let listing of listings){ %>
       <a href="/listings/<%= listing._id %>" class="listing-link" >
   <div class="card col listing-card" >
   <img src="<%= listing.image.url %>" class="card-img-top " alt="listing_image" style="height: 20rem;"  />
@@ -19,13 +127,42 @@
      <b> <%= listing.title %> </b>
      <br>
     &#8377;<%= listing.price.toLocaleString("en-IN") %> /night
+    <i class="tax-Info"> &nbsp; &nbsp; +18% GST</i>
     </p>
   </div>
 </div>
 
       </a>
 
+      
+
 
 <%} %>
+<%} %>
 </div>
+<script>
+  let taxSwitch = document.getElementById('switchCheckDefault');
+  taxSwitch.addEventListener("click",()=>{
+    let taxInfo = document.getElementsByClassName("tax-Info");
+    for(info of taxInfo){
+      if(info.style.display !='inline'){
+         info.style.display='inline';
+      }else{
+      info.style.display='none';
+      }
+    }
+
+  });
+</script>
+<script>
+  const filters = document.querySelectorAll("#filters .filter");
+
+  filters.forEach(filter => {
+    filter.addEventListener("click", () => {
+      const category = filter.dataset.category;
+      // Redirect with category query
+      window.location.href = `/listings?category=${category}`;
+    });
+  });
+</script>
 
